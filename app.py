@@ -1,0 +1,26 @@
+from flask import Flask
+PATH_OF_SERVER = "/home/dustin/Desktop/classification/server"
+UPLOAD_FOLDER = PATH_OF_SERVER + "/public/uploads"
+STATIC_FOLDER = PATH_OF_SERVER + "/public"
+TEMPLATE_FOLDER = PATH_OF_SERVER + "/templates"
+OUTPUT_RESIZE = PATH_OF_SERVER + "/public/resize_uploads"
+OUPUT_DETECT = PATH_OF_SERVER + "/public/output_detect"
+PATH_OF_DATASET = PATH_OF_SERVER + "/dataset"
+PATH_CROP_IMAGE_DETECT = PATH_OF_SERVER + "/public/crop_detect"
+PATH_DETECT_WRONG = PATH_OF_SERVER + "/public/detect_wrong"
+PATH_DETECT_WITH_MASK = PATH_OF_SERVER + "/dataset/with_mask"
+PATH_DETECT_WITHOUT_MASK = PATH_OF_SERVER + "/dataset/without_mask"
+app = Flask(__name__,
+            static_url_path='',
+            static_folder=STATIC_FOLDER,
+            template_folder=TEMPLATE_FOLDER)
+# app.secret_key = "secret key"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 *1024
+app.config['STATIC_FOLDER'] = STATIC_FOLDER
+app.config['OUTPUT_RESIZE'] = OUTPUT_RESIZE
+app.config['OUPUT_DETECT'] = OUPUT_DETECT
+app.config['PATH_CROP_IMAGE_DETECT'] = PATH_CROP_IMAGE_DETECT
+app.config['PATH_DETECT_WRONG'] = PATH_DETECT_WRONG
+app.config['PATH_DETECT_WITH_MASK'] = PATH_DETECT_WITH_MASK
+app.config['PATH_DETECT_WITHOUT_MASK'] = PATH_DETECT_WITHOUT_MASK

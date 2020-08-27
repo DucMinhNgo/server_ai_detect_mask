@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Label</title>
+    <style>
+        body {
+            background-image: url('/vhoa0.jpg');
+        }
+
+        div.gallery {
+            margin: 5px;
+            border: 1px solid #ccc;
+            float: left;
+            width: 180px;
+        }
+
+        div.gallery:hover {
+            border: 1px solid #777;
+        }
+
+        div.gallery img {
+            width: 100%;
+            height: auto;
+        }
+
+        div.desc {
+            padding: 15px;
+            text-align: center;
+        }
+
+        #with_mask {
+            width: 350px;
+            height: 350px;
+            padding: 10px;
+            border: 1px solid #aaaaaa;
+        }
+
+        #without_mask {
+            width: 350px;
+            height: 350px;
+            padding: 10px;
+            border: 1px solid #aaaaaa;
+        }
+
+        #detect_wrong {
+            width: 350px;
+            height: 350px;
+            padding: 10px;
+            border: 1px solid #aaaaaa;
+        }
+    </style>
+</head>
+
+<body onload="getListImageLabel()">
+    <div class="container">
+        <input id="type_lable" type="hidden">
+        <input id="src_image_label" type="hidden">
+    </div>
+    <div class="jumbotron text-center" style="background-image: url('/download.jpg');">
+        <div class="row">
+            <div class="col-sm-6">
+                <h1>Label Page</h1>
+                <p>Drag and Label data</p>
+                <button onclick="logDataHidden()" class="btn">Check data</button>
+            </div>
+            <div class="col-sm-6">
+                <div id="loadListImage"></div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <h3>with_mask</h3>
+                <div id="with_mask" ondrop="drop(event,'with_mask')" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="col-sm-4">
+                <h3>without_mask</h3>
+                <div id="without_mask" ondrop="drop(event, 'without_mask')" ondragover="allowDrop(event)"></div>
+            </div>
+            <div class="col-sm-4">
+                <h3>detect_wrong</h3>
+                <div id="detect_wrong" ondrop="drop(event, 'detect_wrong')" ondragover="allowDrop(event)"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev, _text) {
+        // console.log(_text);
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        // set data
+        // document.getElementById("type_lable").value.push(_text);
+        // document.getElementById("src_image_label").value.push(document.getElementById(data).src);
+        // console.log(data)
+        // console.log(document.getElementById(data).src)
+        // console.log(document.getElementById("type_lable").value);
+        ev.target.appendChild(document.getElementById(data));
+    }
+    function logDataHidden() {
+        _with_mask = document.getElementById('with_mask');
+        _arr_image = _with_mask.getElementsByTagName('img')
+        _len_arr_image = _arr_image.length;
+        console.log(_len_arr_image);
+        _count = 0
+        _src_with_mask = [];
+        while (_count < _len_arr_image) {
+            _src_with_mask.push(_arr_image[_count].src);
+            _count += 1;
+        }
+
+        _without_mask = document.getElementById('without_mask');
+        _arr_without_mask = _without_mask.getElementsByTagName('img');
+        _len_arr_without_mask = _arr_without_mask.length;
+        _count = 0;
+        _src_without_mask = [];
+        while (_count < _len_arr_without_mask) {
+            _src_without_mask.push(_arr_without_mask[_count].src);
+            _count += 1;
+        }
+
+        _detect_wrong = document.getElementById('detect_wrong');
+        _arr_detect_wrong = _detect_wrong.getElementsByTagName('img');
+        _len__arr_detect_wrong = _arr_detect_wrong.length;
+        _count = 0;
+        _src_detect_wrong = [];
+        while (_count < _len__arr_detect_wrong) {
+            _src_detect_wrong.push(_arr_detect_wrong[_count].src);
+            _count += 1
+        }
+        console.log('with mask: ');
+        console.log(_src_with_mask);
+        console.log('without mask: ');
+        console.log(_src_without_mask);
+        console.log('detect wrong: ');
+        console.log(_src_detect_wrong);
+        data = {
+            with_mask: _src_with_mask,
+            without_mask: _src_without_mask,
+            detect_wrong: _src_detect_wrong
+        }
+        $.ajax({
+            type: "POST",
+            url: "/label_classification",
+            data: JSON.stringify(data),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                console.log(data);
+                window.location.href = "/label_page";
+            },
+            error: function (e) {
+                console.log('ERROR: ');
+            },
+        });
+    }
+    function getListImageLabel() {
+        // document.getElementById('type_lable').value = [];
+        // document.getElementById('src_image_label').value = [];
+        // console.log('load list image label');
+        $.ajax({
+            type: "GET",
+            url: "/label_data",
+            success: function (data) {
+                console.log('SUCCESS');
+                if (data.status == true) {
+                    console.log(data.msg);
+                    console.log(data.result);
+                    _len = data.result.length;
+                    console.log(_len);
+                    _count = 0
+                    _str = "";
+                    while (_count < _len) {
+                        console.log(data.result[_count]);
+
+                        _str += "<img id='drag" + _count.toString() + "' src=" + "/crop_detect/" + data.result[_count].toString() + " draggable='true' ondragstart='drag(event)'' width='100' height='100'>";
+                        _count += 1
+                        // <img id="drag1" src="/crop_detect/2208413_0.png " draggable="true" ondragstart="drag(event)" width="100" height="100">
+                    }
+                    var div = document.getElementById('loadListImage');
+                    div.innerHTML = _str;
+                    // loadListImage
+                    // <img id="drag1" src="/crop_detect/2208413_0.png " draggable="true" ondragstart="drag(event)" width="100" height="100">
+                } else {
+
+                }
+            },
+            error: function (e) {
+                console.log('ERROR: ');
+            },
+        })
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>

@@ -1,0 +1,41 @@
+version: '2'
+networks:
+    dustin_network:
+        driver: bridge
+services:
+  web:
+    container_name: "Dustin_backend"
+    build: .
+    ports:
+     - "5000:5000"
+    working_dir: /repo
+    volumes:
+     - ./:/repo
+    depends_on:
+     - mongo
+     - redis
+     - webserver
+    networks:
+        - dustin_network
+  redis:
+    container_name: "Dustin_redis"
+    image: "redis:alpine"
+    ports:
+     - "6378:6379"
+    networks:
+        - dustin_network
+  webserver:
+    container_name: "Dustin_nginx"
+    image: "nginx:alpine"
+    ports:
+     - "8091:80"
+     - "442:443"
+    networks:
+        - dustin_network
+  mongo:
+    container_name: "Dustin_mongo"
+    image: "mongo"
+    ports: 
+     - "4000:27017"
+    networks:
+        - dustin_network

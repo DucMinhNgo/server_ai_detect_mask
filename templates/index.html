@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-image: url('/vhoa0.jpg');
+}
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+    <title>Detect Mask</title>
+</head>
+
+<body>
+    <div class="container">
+        <!-- <div class="row"> -->
+        <!-- <div class="col-sm-12"> -->
+        <h1>Detect Mask</h1>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <span>Choose File: </span>
+            <div class="file-field input-field">
+                <div class="btn grey">
+                    <span>File</span>
+                    <input id="file" name="file" type="file">
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text">
+                </div>
+            </div>
+            <!-- <button type="submit" class="btn">Submit</button> -->
+
+        </form>
+        <button onclick="uploadFile()" class="btn">Detect Mask</button>
+        <button onclick="goToLabelPage()" class="btn" style="margin-right: 0px;">Open Label Page</button>
+        <!-- </div> -->
+        <!-- </div> -->
+        <h1>Show Result:</h1>
+        <div id="displayInputAndOutputPicture"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</body>
+
+</html>
+<script>
+    function goToLabelPage() {
+        window.open("/label_page");
+    }
+    function uploadFile() {
+        var fd = new FormData();
+        console.log(document.getElementById('file').files[0]);
+        fd.append('file', document.getElementById('file').files[0]);
+        $.ajax({
+            type: "POST",
+            url: "/upload",
+            data: fd,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                console.log("SUCCESS: ", data);
+                var div = document.getElementById('displayInputAndOutputPicture');
+                str = "<img src='/resize_uploads/" + data.filename + "'>"
+                str += "<img src='/output_detect/" + data.filename + "'>"
+                div.innerHTML = str;
+            },
+            error: function (e) {
+                console.log("ERROR: ")
+            }
+        });
+    }
+</script>
